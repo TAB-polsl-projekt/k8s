@@ -1,0 +1,98 @@
+
+Table "users" {
+  "user_id" UUID [pk]
+  "email" VARCHAR(255) [not null]
+  "name" VARCHAR(255) [not null]
+  "surname" VARCHAR(255) [not null]
+  "student_id" UUID
+  "user_disabled" BOOLEAN [not null]
+  "last_login_time" TIMESTAMP
+}
+
+Table "subjects" {
+  "subject_id" UUID [pk]
+  "subject_name" VARCHAR(255)
+  "editor_role_id" UUID [not null]
+}
+
+Table "roles" {
+  "role_id" UUID [pk]
+  "name" VARCHAR(255) [not null]
+  "permissions" INT [not null]
+}
+
+Table "user_subjects" {
+  "user_id" UUID [not null]
+  "subject_id" UUID [not null]
+  "role_id" UUID [not null]
+  "grade" DECIMAL(3,2)
+
+  Indexes {
+    (user_id, subject_id) [pk]
+  }
+}
+
+Table "assignments" {
+  "assignment_id" UUID [pk]
+  "subject_id" UUID [not null]
+  "title" VARCHAR(255) [not null]
+  "description" VARCHAR(1024)
+  "accepted_mime_types" "TEXT[]"
+}
+
+Table "solution" {
+  "solution_id" UUID [pk]
+  "grade" DECIMAL(3,2)
+  "submission_date" TIMESTAMP
+  "solution_data" BYTEA
+  "reviewed_by" UUID
+  "review_comment" VARCHAR(1024)
+  "review_date" TIMESTAMP
+  "mime_type" TEXT
+}
+
+Table "user_solution_assignments" {
+  "user_id" UUID
+  "solution_id" UUID
+  "assignment_id" UUID
+
+  Indexes {
+    (user_id, solution_id, assignment_id) [pk]
+  }
+}
+
+Table "microsoft_logins" {
+  "microsoft_login_id" UUID [pk]
+  "microsoft_id" UUID [not null]
+  "user_id" UUID [unique, not null]
+}
+
+Table "session_refresh_keys" {
+  "refresh_key_id" UUID [pk]
+  "user_id" UUID [not null]
+  "expiration_time" TIMESTAMP [not null]
+  "refresh_count" INT [not null]
+  "refresh_limit" INT [not null]
+}
+
+Ref "user_id":"users"."user_id" < "user_subjects"."user_id"
+
+Ref "subject_id":"subjects"."subject_id" < "user_subjects"."subject_id"
+
+Ref "role_id":"roles"."role_id" < "user_subjects"."role_id"
+
+Ref "subject_id":"subjects"."subject_id" < "assignments"."subject_id"
+
+Ref "user_id":"users"."user_id" < "user_solution_assignments"."user_id"
+
+Ref "solution_id":"solution"."solution_id" < "user_solution_assignments"."solution_id"
+
+Ref "assignment_id":"assignments"."assignment_id" < "user_solution_assignments"."assignment_id"
+
+Ref "user_id":"users"."user_id" < "microsoft_logins"."user_id"
+
+Ref "user_id":"users"."user_id" < "session_refresh_keys"."user_id"
+
+Ref "editor_role_id":"roles"."role_id" < "subjects"."editor_role_id"
+
+Ref "reviewed_by":"users"."user_id" < "solution"."reviewed_by"
