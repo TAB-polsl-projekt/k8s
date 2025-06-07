@@ -6,7 +6,7 @@ CREATE TABLE users (
   student_id TEXT,
   user_disabled BOOLEAN NOT NULL,
   last_login_time DATETIME,
-  is_admin BOOLEAN
+  is_admin BOOLEAN  NOT NULL DEFAULT 0
 );
 
 CREATE TABLE roles (
