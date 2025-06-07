@@ -1,24 +1,25 @@
 CREATE TABLE users (
   user_id TEXT PRIMARY KEY,
-  email VARCHAR(255) NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  surname VARCHAR(255) NOT NULL,
+  email TEXT NOT NULL,
+  name TEXT NOT NULL,
+  surname TEXT NOT NULL,
   student_id TEXT,
   user_disabled BOOLEAN NOT NULL,
-  last_login_time TIMESTAMP
-);
-
-CREATE TABLE subjects (
-  subject_id TEXT PRIMARY KEY,
-  subject_name VARCHAR(255),
-  editor_role_id TEXT NOT NULL,
-  FOREIGN KEY (editor_role_id) REFERENCES roles(role_id)
+  last_login_time DATETIME,
+  is_admin BOOLEAN
 );
 
 CREATE TABLE roles (
   role_id TEXT PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
+  name TEXT NOT NULL,
   permissions INTEGER NOT NULL
+);
+
+CREATE TABLE subjects (
+  subject_id TEXT PRIMARY KEY,
+  subject_name TEXT,
+  editor_role_id TEXT NOT NULL,
+  FOREIGN KEY (editor_role_id) REFERENCES roles(role_id)
 );
 
 CREATE TABLE user_subjects (
@@ -35,28 +36,28 @@ CREATE TABLE user_subjects (
 CREATE TABLE assignments (
   assignment_id TEXT PRIMARY KEY,
   subject_id TEXT NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  description VARCHAR(1024),
-  accepted_mime_types TEXT,
+  title TEXT NOT NULL,
+  description TEXT,
+  accepted_mime_types TEXT, -- Store as comma-separated or JSON string
   FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
 );
 
 CREATE TABLE solution (
   solution_id TEXT PRIMARY KEY,
   grade DECIMAL(3,2),
-  submission_date TIMESTAMP,
+  submission_date DATETIME,
   solution_data BLOB,
   reviewed_by TEXT,
-  review_comment VARCHAR(1024),
-  review_date TIMESTAMP,
+  review_comment TEXT,
+  review_date DATETIME,
   mime_type TEXT,
   FOREIGN KEY (reviewed_by) REFERENCES users(user_id)
 );
 
 CREATE TABLE user_solution_assignments (
-  user_id TEXT,
-  solution_id TEXT,
-  assignment_id TEXT,
+  user_id TEXT NOT NULL,
+  solution_id TEXT NOT NULL,
+  assignment_id TEXT NOT NULL,
   PRIMARY KEY (user_id, solution_id, assignment_id),
   FOREIGN KEY (user_id) REFERENCES users(user_id),
   FOREIGN KEY (solution_id) REFERENCES solution(solution_id),
@@ -73,7 +74,7 @@ CREATE TABLE microsoft_logins (
 CREATE TABLE session_refresh_keys (
   refresh_key_id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL,
-  expiration_time TIMESTAMP NOT NULL,
+  expiration_time DATETIME NOT NULL,
   refresh_count INTEGER NOT NULL,
   refresh_limit INTEGER NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(user_id)
