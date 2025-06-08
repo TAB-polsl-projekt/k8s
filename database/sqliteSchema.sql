@@ -1,5 +1,5 @@
 CREATE TABLE users (
-  user_id TEXT PRIMARY KEY,
+  user_id TEXT PRIMARY KEY NOT NULL,
   email TEXT NOT NULL,
   name TEXT NOT NULL,
   surname TEXT NOT NULL,
@@ -10,13 +10,13 @@ CREATE TABLE users (
 );
 
 CREATE TABLE roles (
-  role_id TEXT PRIMARY KEY,
+  role_id TEXT PRIMARY KEY NOT NULL,
   name TEXT NOT NULL,
   permissions INTEGER NOT NULL
 );
 
 CREATE TABLE subjects (
-  subject_id TEXT PRIMARY KEY,
+  subject_id TEXT PRIMARY KEY NOT NULL,
   subject_name TEXT,
   editor_role_id TEXT NOT NULL,
   FOREIGN KEY (editor_role_id) REFERENCES roles(role_id)
@@ -34,7 +34,7 @@ CREATE TABLE user_subjects (
 );
 
 CREATE TABLE assignments (
-  assignment_id TEXT PRIMARY KEY,
+  assignment_id TEXT PRIMARY KEY NOT NULL,
   subject_id TEXT NOT NULL,
   title TEXT NOT NULL,
   description TEXT,
@@ -43,7 +43,7 @@ CREATE TABLE assignments (
 );
 
 CREATE TABLE solution (
-  solution_id TEXT PRIMARY KEY,
+  solution_id TEXT PRIMARY KEY NOT NULL,
   grade DECIMAL(3,2),
   submission_date DATETIME,
   solution_data BLOB,
@@ -65,14 +65,14 @@ CREATE TABLE user_solution_assignments (
 );
 
 CREATE TABLE microsoft_logins (
-  microsoft_login_id TEXT PRIMARY KEY,
+  microsoft_login_id TEXT PRIMARY KEY NOT NULL,
   microsoft_id TEXT NOT NULL,
   user_id TEXT NOT NULL UNIQUE,
   FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE session_refresh_keys (
-  refresh_key_id TEXT PRIMARY KEY,
+  refresh_key_id TEXT PRIMARY KEY NOT NULL,
   user_id TEXT NOT NULL,
   expiration_time DATETIME NOT NULL,
   refresh_count INTEGER NOT NULL,
