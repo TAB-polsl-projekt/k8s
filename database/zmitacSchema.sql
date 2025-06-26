@@ -32,21 +32,12 @@ CREATE TABLE subject_role (
   FOREIGN KEY (role_id) REFERENCES roles(role_id)
 );
 
-CREATE TABLE user_subject (
-  user_id TEXT NOT NULL,
-  subject_id TEXT NOT NULL,
-  grade DECIMAL(3,2),
-  PRIMARY KEY (user_id, subject_id),
-  FOREIGN KEY (user_id) REFERENCES users(user_id),
-  FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
-);
-
 CREATE TABLE assignments (
   assignment_id TEXT NOT NULL PRIMARY KEY,
   subject_id TEXT NOT NULL,
   title TEXT NOT NULL,
   description TEXT NOT NULL,
-  accepted_mime_types TEXT NOT NULL, -- Store JSON or comma-separated values
+  accepted_mime_types TEXT NOT NULL,
   FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
 );
 
