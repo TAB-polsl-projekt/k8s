@@ -1,0 +1,88 @@
+CREATE TABLE users (
+  user_id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  surname TEXT NOT NULL,
+  student_id TEXT,
+  is_admin BOOLEAN
+);
+
+CREATE TABLE subjects (
+  subject_id TEXT NOT NULL PRIMARY KEY,
+  subject_name TEXT
+);
+
+CREATE TABLE roles (
+  role_id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE user_role (
+  role_id TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  PRIMARY KEY (role_id, user_id),
+  FOREIGN KEY (role_id) REFERENCES roles(role_id),
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE subject_role (
+  subject_id TEXT NOT NULL,
+  role_id TEXT NOT NULL,
+  PRIMARY KEY (subject_id, role_id),
+  FOREIGN KEY (subject_id) REFERENCES subjects(subject_id),
+  FOREIGN KEY (role_id) REFERENCES roles(role_id)
+);
+
+CREATE TABLE user_subject (
+  user_id TEXT NOT NULL,
+  subject_id TEXT NOT NULL,
+  grade DECIMAL(3,2),
+  PRIMARY KEY (user_id, subject_id),
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
+);
+
+CREATE TABLE assignments (
+  assignment_id TEXT NOT NULL PRIMARY KEY,
+  subject_id TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  accepted_mime_types TEXT, -- Store JSON or comma-separated values
+  FOREIGN KEY (subject_id) REFERENCES subjects(subject_id)
+);
+
+CREATE TABLE solutions (
+  solution_id TEXT NOT NULL PRIMARY KEY,
+  grade DECIMAL(3,2),
+  submission_date TIMESTAMP,
+  solution_data BLOB,
+  reviewed_by TEXT,
+  review_comment TEXT,
+  review_date TIMESTAMP,
+  mime_type TEXT,
+  assignment_id TEXT,
+  FOREIGN KEY (reviewed_by) REFERENCES users(user_id),
+  FOREIGN KEY (assignment_id) REFERENCES assignments(assignment_id)
+);
+
+CREATE TABLE user_solution (
+  user_id TEXT NOT NULL,
+  solution_id TEXT NOT NULL,
+  PRIMARY KEY (user_id, solution_id),
+  FOREIGN KEY (user_id) REFERENCES users(user_id),
+  FOREIGN KEY (solution_id) REFERENCES solutions(solution_id)
+);
+
+CREATE TABLE session_ids (
+  refresh_key_id TEXT NOT NULL PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  expiration_time TIMESTAMP NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE logins (
+  login_id TEXT NOT NULL PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  email TEXT NOT NULL,
+  passwd_hash TEXT NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
